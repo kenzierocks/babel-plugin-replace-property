@@ -13,19 +13,27 @@ function objToMap(obj) {
     return m;
 }
 
+function inlineThisLater(state) {
+    const r = state.opts.replacements || {};
+    // console.log(state);
+    if (state.opts.debug) {
+        console.log("Using replacements", r);
+    }
+    this.repls = objToMap(r);
+    this.re = new RegExp("\\$\\{" + join(r) + "\\}", "g");
+}
+
 export default function ({types: t}) {
     return {
         name: "replace-properties",
         pre(state) {
-            const r = state.opts.replacements || {};
-            if (state.opts.debug) {
-                console.log("Using replacements", r);
-            }
-            this.repls = objToMap(r);
-            this.re = new RegExp("\\$\\{" + join(r) + "\\}", "g");
+            // TODO inline inlineThisLater here
         },
         visitor: {
             StringLiteral(path) {
+                if (this.repls === undefined) {
+                    inlineThisLater.call(this, arguments[1]);
+                }
                 if (this.repls.size === 0) {
                     return
                 }
