@@ -17,7 +17,10 @@ export default function ({types: t}) {
     return {
         name: "replace-properties",
         pre(state) {
-            const r = state.opts.replacements || {"constant": "foobar!"};
+            const r = state.opts.replacements || {};
+            if (state.opts.debug) {
+                console.log("Using replacements", r);
+            }
             this.repls = objToMap(r);
             this.re = new RegExp("\\$\\{" + join(r) + "\\}", "g");
         },
